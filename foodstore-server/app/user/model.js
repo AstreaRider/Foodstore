@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const {model, Schema} = mongoose
 const bcrypt = require('bcrypt')
+const AutoIncrement = require('mongoose-sequence')(mongoose)
 
 const HASH_ROUND = 10
 
@@ -47,7 +48,9 @@ userSchema.path('email').validate(async function(value){
 }, attr => `${attr.value} sudah terdaftar`)
 
 userSchema.pre('Save', function(next){
-    this.password =bcrypt.hashSync(this.password, HASH_ROUND)
+    this.password = bcrypt.hashSync(this.password, HASH_ROUND)
 })
+
+userSchema.plugin(AutoIncrement, {inc_field: 'customer_id'})
 
 module.exports = model('User', userSchema)
